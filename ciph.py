@@ -2,16 +2,18 @@ from abc import ABC, abstractmethod
 import matplotlib.pyplot as plt
 
 class FrequencyImage:
-    def img(self, text: str):
+    @staticmethod
+    def img(text: str):
         x_letters = list(set([i for i in text]))
         y_count = [text.count(i) for i in x_letters]
         plt.title('Frequency')
         plt.bar(x_letters, y_count)
         plt.show()
 
+
 class WorkWithFiles:
     def __init__(self, file_path: str):
-        if file_path.endswith('.docx') or file_path.endswith('.txt') or file_path.endswith('.pdf'):
+        if file_path.endswith('.docx') or file_path.endswith('.txt'):
             self.file_path = file_path
         else:
             raise NameError
@@ -68,7 +70,6 @@ class EngCipher(CaesarCipher):
 
     def decipher_txt(self):
         '''
-
         :return: decrypted text
         '''
         deciphered_txt = ''
@@ -85,8 +86,8 @@ class EngCipher(CaesarCipher):
 
 
 class UkrCipher(CaesarCipher):
-    ukrLangUp = 'АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ'
-    ukrLang = ukrLangUp + 'абвгґдеєжзиіїйклмнопрстуфхцчшщьюя'
+    __ukrLangUp = 'АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ'
+    __ukrLang = __ukrLangUp + 'абвгґдеєжзиіїйклмнопрстуфхцчшщьюя'
 
     def __init__(self, information: str, step: int):
         super().__init__(information, step)
@@ -99,10 +100,10 @@ class UkrCipher(CaesarCipher):
         for i in self.information:
             if not i.isalpha():
                 ciphered_txt += i
-            elif self.ukrLangUp.index(i.upper())+self.step < len(self.ukrLangUp):
-                ciphered_txt += self.ukrLang[self.ukrLang.index(i)+self.step]
+            elif self.__ukrLangUp.index(i.upper())+self.step < len(self.__ukrLangUp):
+                ciphered_txt += self.__ukrLang[self.__ukrLang.index(i) + self.step]
             else:
-                ciphered_txt += self.ukrLang[self.ukrLang.index(i)+self.step-33]
+                ciphered_txt += self.__ukrLang[self.__ukrLang.index(i) + self.step - 33]
         n = FrequencyImage()
         n.img(ciphered_txt)
         return ciphered_txt
@@ -115,17 +116,18 @@ class UkrCipher(CaesarCipher):
         for i in self.information:
             if not i.isalpha():
                 deciphered_txt += i
-            elif self.ukrLangUp.index(i.upper()) >= self.step:
-                deciphered_txt += self.ukrLang[self.ukrLang.index(i)-self.step]
+            elif self.__ukrLangUp.index(i.upper()) >= self.step:
+                deciphered_txt += self.__ukrLang[self.__ukrLang.index(i) - self.step]
             else:
-                deciphered_txt += self.ukrLang[self.ukrLang.index(i)-self.step+33]
+                deciphered_txt += self.__ukrLang[self.__ukrLang.index(i) - self.step + 33]
         n = FrequencyImage()
         n.img(deciphered_txt)
         return deciphered_txt
 
 
 class CiphInFile:
-    def ukr_cipher(self, r_file: str, w_file: str, choice=1, step=3):
+    @staticmethod
+    def ukr_cipher(r_file: str, w_file: str, choice=1, step=3):
         '''
         :param r_file: the file that will be read
         :param w_file: the file in which the information will be written
@@ -137,7 +139,8 @@ class CiphInFile:
         WorkWithFiles(w_file).write_txt(UkrCipher(txt_from_file, step).cipher_txt()) if choice == 1 \
             else WorkWithFiles(w_file).write_txt(UkrCipher(txt_from_file, step).decipher_txt())
 
-    def eng_cipher(self, r_file: str, w_file: str, choice=1, step=3):
+    @staticmethod
+    def eng_cipher(r_file: str, w_file: str, choice=1, step=3):
         '''
         :param r_file: the file that will be read
         :param w_file: the file in which the information will be written
@@ -150,5 +153,3 @@ class CiphInFile:
         WorkWithFiles(w_file).write_txt(EngCipher(txt_from_file, step).cipher_txt()) if choice == 1 \
             else WorkWithFiles(w_file).write_txt(EngCipher(txt_from_file, step).decipher_txt())
 
-n = FrequencyImage()
-n.img(text='Asaasdf')

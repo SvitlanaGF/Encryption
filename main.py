@@ -2,7 +2,6 @@ import tkinter
 from ciph import CiphInFile
 import customtkinter
 
-
 customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("green")
 
@@ -20,7 +19,6 @@ choose_ciph = tkinter.IntVar()
 
 def ciph_or_deciph():
     print('Encrypt the text') if choose_ciph.get() == 1 else print('Decrypt the text')
-
 
 
 encr = customtkinter.CTkRadioButton(master=frame, text="Encrypt"
