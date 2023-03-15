@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import matplotlib.pyplot as plt
 
+
 class FrequencyImage:
     @staticmethod
     def img(text: str):
@@ -13,10 +14,8 @@ class FrequencyImage:
 
 class WorkWithFiles:
     def __init__(self, file_path: str):
-        if file_path.endswith('.docx') or file_path.endswith('.txt'):
-            self.file_path = file_path
-        else:
-            raise NameError
+        self.file_path = file_path
+
 
     def write_txt(self, information: str):
         '''
@@ -127,29 +126,44 @@ class UkrCipher(CaesarCipher):
 
 class CiphInFile:
     @staticmethod
-    def ukr_cipher(r_file: str, w_file: str, choice=1, step=3):
+    def ukr_cipher(txt: str, w_file: str, choice=1, step=3):
         '''
-        :param r_file: the file that will be read
+        :param txt: the text that will be read
         :param w_file: the file in which the information will be written
         :param choice: 1 - encrypt the text; else decrypt the text
         :param step: displacement step
         :return: file with recorded information
         '''
-        txt_from_file = WorkWithFiles(r_file).read_text()
-        WorkWithFiles(w_file).write_txt(UkrCipher(txt_from_file, step).cipher_txt()) if choice == 1 \
-            else WorkWithFiles(w_file).write_txt(UkrCipher(txt_from_file, step).decipher_txt())
+        WorkWithFiles(w_file).write_txt(UkrCipher(txt, step).cipher_txt()), print(UkrCipher(txt, step).cipher_txt()) \
+            if choice == 1 else WorkWithFiles(w_file).write_txt(UkrCipher(txt, step).decipher_txt()),\
+            print(UkrCipher(txt, step).decipher_txt())
 
     @staticmethod
-    def eng_cipher(r_file: str, w_file: str, choice=1, step=3):
+    def eng_cipher(txt: str, w_file: str, choice=1, step=3):
         '''
-        :param r_file: the file that will be read
+        :param txt: the text that will be read
         :param w_file: the file in which the information will be written
         :param choice: 1 - encrypt the text; else decrypt the text
         :param step: displacement step
         :return: file with recorded information
         '''
+        WorkWithFiles(w_file).write_txt(EngCipher(txt, step).cipher_txt()), print(EngCipher(txt, step).cipher_txt()) if \
+            choice == 1 else WorkWithFiles(w_file).write_txt(EngCipher(txt, step).decipher_txt()), \
+            print(EngCipher(txt, step).decipher_txt())
 
-        txt_from_file = WorkWithFiles(r_file).read_text()
-        WorkWithFiles(w_file).write_txt(EngCipher(txt_from_file, step).cipher_txt()) if choice == 1 \
-            else WorkWithFiles(w_file).write_txt(EngCipher(txt_from_file, step).decipher_txt())
+    def encr_it(self, txt: str, w_file: str, choice=1, step=3):
+        if txt.endswith('.docx') or txt.endswith('.txt'):
+            text = WorkWithFiles(txt).read_text()
+        else:
+            text = txt
+        n = 0
+        while True:
+            if text[n].isalpha():
+                if 65 <= ord(text[n].upper()) <= 90:
+                    self.eng_cipher(text, w_file, choice, step)
+                else:
+                    self.ukr_cipher(text, w_file, choice, step)
+                break
+            n += 1
+
 

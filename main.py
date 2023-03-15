@@ -50,36 +50,16 @@ step.pack(padx=20, pady=5)
 label3 = customtkinter.CTkLabel(master=frame, text='Files'
                                 , font=('Roboto', 14))
 label3.pack(pady=5, padx=10)
-r_file = customtkinter.CTkEntry(master=frame, placeholder_text='File to read', width=250, height=30)
+r_file = customtkinter.CTkEntry(master=frame, placeholder_text='Text', width=250, height=100)
 w_file = customtkinter.CTkEntry(master=frame, placeholder_text='File to write', width=250, height=30)
 r_file.pack(pady=7, padx=5)
 w_file.pack(pady=7, padx=5)
-# Choose language
-label4 = customtkinter.CTkLabel(master=frame, text='Choose language', font=('Roboto', 14))
-label4.pack(pady=12, padx=10)
-
-lang_var = tkinter.IntVar()
-
-
-def choose_lang():
-    print('Ukr') if lang_var.get() == 1 else print('Eng')
-
-
-ukr_lang = customtkinter.CTkRadioButton(master=frame, text="Ukrainian", command=choose_lang, variable=lang_var, value=1)
-eng_lang = customtkinter.CTkRadioButton(master=frame, text="English", command=choose_lang, variable=lang_var, value=2)
-
-ukr_lang.pack(padx=20, pady=10)
-eng_lang.pack(padx=20, pady=10)
 
 # Button
 
-
 def save_information():
     n = CiphInFile()
-    if lang_var.get() == 1:
-        n.ukr_cipher(r_file=r_file.get(), w_file=w_file.get(), step=int(step.get()), choice=choose_ciph.get())
-    else:
-        n.eng_cipher(r_file=r_file.get(), w_file=w_file.get(), step=int(step.get()), choice=choose_ciph.get())
+    n.encr_it(txt=r_file.get(), w_file=w_file.get(), step=int(step.get()), choice=choose_ciph.get())
 
 
 button = customtkinter.CTkButton(master=frame, text="Ok", command=save_information)
