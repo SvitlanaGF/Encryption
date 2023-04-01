@@ -1,132 +1,12 @@
-from abc import ABC, abstractmethod
-import matplotlib.pyplot as plt
+from gamma import *
+from vernam import Vernam
+from vigenere import VigenereCiph
+from caesar import *
 
 
-class FrequencyImage:
+class CeasarCiphInFile:
     @staticmethod
-    def img(text: str):
-        x_letters = list(set([i for i in text]))
-        y_count = [text.count(i) for i in x_letters]
-        plt.title('Frequency')
-        plt.bar(x_letters, y_count)
-        plt.show()
-
-
-class WorkWithFiles:
-    def __init__(self, file_path: str):
-        self.file_path = file_path
-
-
-    def write_txt(self, information: str):
-        '''
-        :param information: text you want to write into file
-        '''
-        with open(self.file_path, 'w', encoding='utf-8') as f:
-            f.write(information)
-        print(f'The information has been written into the file "{self.file_path}"')
-
-    def read_text(self):
-        '''
-        :return: string with an information from the file
-        '''
-        with open(self.file_path, 'r', encoding='utf-8') as f:
-            return f.read()
-
-
-class CaesarCipher(ABC):
-    def __init__(self, information: str, step: int):
-        self.information = information
-        self.step = step
-
-    @abstractmethod
-    def cipher_txt(self):
-        pass
-
-    @abstractmethod
-    def decipher_txt(self):
-        pass
-
-
-class EngCipher(CaesarCipher):
-    def __init__(self, information: str, step: int):
-        super().__init__(information, step)
-
-    def cipher_txt(self):
-        '''
-        :return: encrypted text
-        '''
-        ciphered_txt = ''
-        for i in self.information:
-            if not i.isalpha():
-                ciphered_txt += i
-            elif ord(i.upper())+self.step <= 90:
-                ciphered_txt += chr(ord(i)+self.step)
-            else:
-                ciphered_txt += chr(ord(i)+self.step-26)
-        n = FrequencyImage()
-        n.img(ciphered_txt)
-        return ciphered_txt
-
-    def decipher_txt(self):
-        '''
-        :return: decrypted text
-        '''
-        deciphered_txt = ''
-        for i in self.information:
-            if not i.isalpha():
-                deciphered_txt += i
-            elif ord(i.upper()) >= 65+self.step:
-                deciphered_txt += chr(ord(i)-self.step)
-            else:
-                deciphered_txt += chr(ord(i)-self.step+26)
-        n = FrequencyImage()
-        n.img(deciphered_txt)
-        return deciphered_txt
-
-
-class UkrCipher(CaesarCipher):
-    __ukrLangUp = 'АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ'
-    __ukrLang = __ukrLangUp + 'абвгґдеєжзиіїйклмнопрстуфхцчшщьюя'
-
-    def __init__(self, information: str, step: int):
-        super().__init__(information, step)
-
-    def cipher_txt(self):
-        '''
-        :return: encrypted text
-        '''
-        ciphered_txt = ''
-        for i in self.information:
-            if not i.isalpha():
-                ciphered_txt += i
-            elif self.__ukrLangUp.index(i.upper())+self.step < len(self.__ukrLangUp):
-                ciphered_txt += self.__ukrLang[self.__ukrLang.index(i) + self.step]
-            else:
-                ciphered_txt += self.__ukrLang[self.__ukrLang.index(i) + self.step - 33]
-        n = FrequencyImage()
-        n.img(ciphered_txt)
-        return ciphered_txt
-
-    def decipher_txt(self):
-        '''
-        :return: decrypted text
-        '''
-        deciphered_txt = ''
-        for i in self.information:
-            if not i.isalpha():
-                deciphered_txt += i
-            elif self.__ukrLangUp.index(i.upper()) >= self.step:
-                deciphered_txt += self.__ukrLang[self.__ukrLang.index(i) - self.step]
-            else:
-                deciphered_txt += self.__ukrLang[self.__ukrLang.index(i) - self.step + 33]
-        n = FrequencyImage()
-        n.img(deciphered_txt)
-        return deciphered_txt
-
-
-class CiphInFile:
-    @staticmethod
-    def ukr_cipher(txt: str, w_file: str, choice=1, step=3):
+    def ukr_cipher(txt: str, encryption: str, w_file: str, choice=1, step=3, key='', motto=''):
         '''
         :param txt: the text that will be read
         :param w_file: the file in which the information will be written
@@ -134,12 +14,33 @@ class CiphInFile:
         :param step: displacement step
         :return: file with recorded information
         '''
-        WorkWithFiles(w_file).write_txt(UkrCipher(txt, step).cipher_txt()), print(UkrCipher(txt, step).cipher_txt()) \
-            if choice == 1 else WorkWithFiles(w_file).write_txt(UkrCipher(txt, step).decipher_txt()),\
-            print(UkrCipher(txt, step).decipher_txt())
-
+        if encryption == 'Ceasar':
+            WorkWithFiles(w_file).write_txt(UkrCaesarCipher(txt, step).cipher_txt()), print(UkrCaesarCipher(txt, step).cipher_txt()) \
+                if choice == 1 else WorkWithFiles(w_file).write_txt(UkrCaesarCipher(txt, step).decipher_txt()),\
+                print(UkrCaesarCipher(txt, step).decipher_txt())
+        elif encryption == 'Gamma':
+            if choice == 1:
+                n = GammaCiph(txt, 'АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ').encrypt()[0]
+                WorkWithFiles(w_file).write_txt(n)
+                print(n)
+            else:
+                n = GammaCiph(txt, 'АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ').decrypt(key)
+                WorkWithFiles(w_file).write_txt(n)
+                print(n)
+        elif encryption == 'Vigenere':
+            if choice == 1:
+                WorkWithFiles(w_file).write_txt(VigenereCiph(txt, motto, 'АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ').encrypt())
+            else:
+                WorkWithFiles(w_file).write_txt(VigenereCiph(txt, motto, 'АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ').decrypt())
+        elif encryption == "Vernam":
+            if choice == 1:
+                WorkWithFiles(w_file).write_txt(Vernam(txt, 'АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ', motto).encrypt())
+                print(Vernam(txt, 'АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ', motto).encrypt())
+            else:
+                WorkWithFiles(w_file).write_txt(VigenereCiph(txt, 'АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ', motto).decrypt())
+                print(VigenereCiph(txt, motto, 'АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ').encrypt())
     @staticmethod
-    def eng_cipher(txt: str, w_file: str, choice=1, step=3):
+    def eng_cipher(txt: str, encryption: str, w_file: str, choice =1, step=3, key='', motto=''):
         '''
         :param txt: the text that will be read
         :param w_file: the file in which the information will be written
@@ -147,11 +48,35 @@ class CiphInFile:
         :param step: displacement step
         :return: file with recorded information
         '''
-        WorkWithFiles(w_file).write_txt(EngCipher(txt, step).cipher_txt()), print(EngCipher(txt, step).cipher_txt()) if \
-            choice == 1 else WorkWithFiles(w_file).write_txt(EngCipher(txt, step).decipher_txt()), \
-            print(EngCipher(txt, step).decipher_txt())
+        if encryption == 'Ceasar':
+            WorkWithFiles(w_file).write_txt(EngCaesarCipher(txt, step).cipher_txt()), print(EngCaesarCipher(txt, step).cipher_txt()) if \
+                choice == 1 else WorkWithFiles(w_file).write_txt(EngCaesarCipher(txt, step).decipher_txt()), \
+                print(EngCaesarCipher(txt, step).decipher_txt())
+        elif encryption == 'Gamma':
+            if choice == 1:
+                n = GammaCiph(txt, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ').encrypt()[0]
+                WorkWithFiles(w_file).write_txt(n)
+                print(n)
+            else:
+                n = GammaCiph(txt, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ').decrypt(key)
+                WorkWithFiles(w_file).write_txt(n)
+                print(n)
+        elif encryption == 'Vigenere':
+            if choice == 1:
+                WorkWithFiles(w_file).write_txt(VigenereCiph(txt, motto, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ').encrypt())
+                print(VigenereCiph(txt, motto, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ').encrypt())
+            else:
+                WorkWithFiles(w_file).write_txt(VigenereCiph(txt, motto, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ').decrypt())
+                print(VigenereCiph(txt, motto, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ').encrypt())
+        elif encryption == "Vernam":
+            if choice == 1:
+                WorkWithFiles(w_file).write_txt(Vernam(txt, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', motto).encrypt())
+                print(Vernam(txt, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', motto).encrypt())
+            else:
+                WorkWithFiles(w_file).write_txt(Vernam(txt, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', motto).decrypt())
+                print(Vernam(txt, motto, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ').encrypt())
 
-    def encr_it(self, txt: str, w_file: str, choice=1, step=3):
+    def encr_it(self, txt: str, encryption: str, w_file: str, choice=1,  step=3, key='', motto=''):
         if txt.endswith('.docx') or txt.endswith('.txt'):
             text = WorkWithFiles(txt).read_text()
         else:
@@ -160,10 +85,9 @@ class CiphInFile:
         while True:
             if text[n].isalpha():
                 if 65 <= ord(text[n].upper()) <= 90:
-                    self.eng_cipher(text, w_file, choice, step)
+                    self.eng_cipher(txt=text, encryption=encryption, w_file=w_file, choice=choice, step=step, key=key, motto=motto)
                 else:
-                    self.ukr_cipher(text, w_file, choice, step)
+                    self.ukr_cipher(txt=text, encryption=encryption, w_file=w_file, choice=choice, step=step, key=key, motto=motto)
                 break
             n += 1
-
 
