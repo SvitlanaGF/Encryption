@@ -20,7 +20,7 @@ class CeasarCiphInFile:
                 print(UkrCaesarCipher(txt, step).decipher_txt())
         elif encryption == 'Gamma':
             if choice == 1:
-                n = GammaCiph(txt, 'АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ').encrypt()[0]
+                n = GammaCiph(txt, 'АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ').encrypt()
                 WorkWithFiles(w_file).write_txt(n)
                 print(n)
             else:
@@ -37,8 +37,8 @@ class CeasarCiphInFile:
                 WorkWithFiles(w_file).write_txt(Vernam(txt, 'АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ', motto).encrypt())
                 print(Vernam(txt, 'АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ', motto).encrypt())
             else:
-                WorkWithFiles(w_file).write_txt(VigenereCiph(txt, 'АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ', motto).decrypt())
-                print(VigenereCiph(txt, motto, 'АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ').encrypt())
+                WorkWithFiles(w_file).write_txt(Vernam(txt, 'АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ', motto).decrypt())
+                print(Vernam(txt, 'АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ', motto).decrypt())
     @staticmethod
     def eng_cipher(txt: str, encryption: str, w_file: str, choice =1, step=3, key='', motto=''):
         '''
@@ -54,7 +54,7 @@ class CeasarCiphInFile:
                 print(EngCaesarCipher(txt, step).decipher_txt())
         elif encryption == 'Gamma':
             if choice == 1:
-                n = GammaCiph(txt, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ').encrypt()[0]
+                n = GammaCiph(txt, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ').encrypt()
                 WorkWithFiles(w_file).write_txt(n)
                 print(n)
             else:
@@ -74,7 +74,7 @@ class CeasarCiphInFile:
                 print(Vernam(txt, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', motto).encrypt())
             else:
                 WorkWithFiles(w_file).write_txt(Vernam(txt, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', motto).decrypt())
-                print(Vernam(txt, motto, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ').encrypt())
+                print(Vernam(txt, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', motto).decrypt())
 
     def encr_it(self, txt: str, encryption: str, w_file: str, choice=1,  step=3, key='', motto=''):
         if txt.endswith('.docx') or txt.endswith('.txt'):
